@@ -593,9 +593,48 @@ TEST(FamContextModel, FamContextAllAtomicsIOTest) {
                 EXPECT_EQ(testXorExpectedValue[i], result);
             }
         }
+    
+        EXPECT_NO_THROW(my_fam->fam_deallocate(item));
+        delete item;
+    }
 
+    //fam_swap
 
+     uint64_t oldValue[5] = {0x0, 0x1234, 0x1111222233334444, 0x7ffffffffffffffe,
+                            0x7fffffffffffffff};
+    uint64_t newValue[5] = {0x1, 0x4321, 0x2111222233334321, 0x8000000000000000,
+                            0xefffffffffffffff};
 
+    for (sm = 0; sm < 3; sm++) {
+        // Allocating data items in the created region
+        EXPECT_NO_THROW(
+            item = my_fam->fam_allocate(dataItem, test_item_size[sm],
+                                        test_perm_mode[sm], testRegionDesc));
+        EXPECT_NE((void *)NULL, item);
+
+        uint64_t testOffset[3] = {0, (test_item_size[sm] / 2),
+                                  (test_item_size[sm] - 2 * sizeof(uint64_t))};
+
+        for (ofs = 0; ofs < 3; ofs++) {
+            for (i = 0; i < 5; i++) {
+  /*              cout << "Testing fam_compare_and_swap: item=" << item
+                     << ", offset=" << hex << testOffset[ofs]
+                     << ", oldValue=" << hex << oldValue[i]
+                     << ", newValue=" << hex << newValue[i] << endl;*/
+
+                uint64_t result;
+                EXPECT_NO_THROW(
+                    my_fam->fam_set(item, testOffset[ofs], oldValue[i]));
+                EXPECT_NO_THROW(my_fam->fam_quiet());
+                EXPECT_NO_THROW(result = my_fam->fam_swap(item, testOffset[ofs],
+                                                          newValue[i]));
+                EXPECT_EQ(oldValue[i], result);
+                EXPECT_NO_THROW(
+                    result = my_fam->fam_fetch_uint64(item, testOffset[ofs]));
+                EXPECT_EQ(newValue[i], result);
+            }
+        }
+   
         EXPECT_NO_THROW(my_fam->fam_deallocate(item));
         delete item;
     }
