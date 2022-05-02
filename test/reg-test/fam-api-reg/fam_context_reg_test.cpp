@@ -179,46 +179,44 @@ TEST(FamContextModel, FamContextAllDataPathOpsIOTest) {
     EXPECT_NO_THROW(ctx = my_fam->fam_context_open());
 
     Fam_Region_Descriptor *desc;
-///    void *base;
+    ///    void *base;
 
     const char *testRegion = get_uniq_str("test", ctx);
 
     const char *firstItem = get_uniq_str("first", ctx);
 
-
-
-    EXPECT_NO_THROW(desc =  my_fam->fam_create_region(testRegion, 8192, 0777, NULL));
+    EXPECT_NO_THROW(
+        desc = my_fam->fam_create_region(testRegion, 8192, 0777, NULL));
 
     EXPECT_NE((void *)NULL, desc);
-					 // Allocating data items in the created region
+    // Allocating data items in the created region
     EXPECT_NO_THROW(item = my_fam->fam_allocate(firstItem, 1024, 0777, desc));
-  
-    //FAM scatter gather tests with fam_context
+
+    // FAM scatter gather tests with fam_context
 
     EXPECT_NE((void *)NULL, item);
 
     // allocate an integer array and initialize it
     int newlocal[] = {15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
     char *local = strdup("Test message");
-//    char *local3 = (char *)malloc(20);
+    //    char *local3 = (char *)malloc(20);
 
     uint64_t indexes[] = {0, 7, 3, 5, 8};
-    EXPECT_NO_THROW( ctx->fam_scatter_blocking(newlocal, item, 5, indexes, sizeof(int)));
+    EXPECT_NO_THROW(
+        ctx->fam_scatter_blocking(newlocal, item, 5, indexes, sizeof(int)));
     int *local2 = (int *)malloc(10 * sizeof(int));
 
-
-
-    EXPECT_NO_THROW( ctx->fam_gather_blocking(local2, item, 5, indexes, sizeof(int)));
+    EXPECT_NO_THROW(
+        ctx->fam_gather_blocking(local2, item, 5, indexes, sizeof(int)));
 
     for (int i = 0; i < 5; i++) {
 
-         EXPECT_EQ(local2[i], newlocal[i]);
-
+        EXPECT_EQ(local2[i], newlocal[i]);
     }
 
-  // fam get put with fam_context
+    // fam get put with fam_context
 
-   EXPECT_NO_THROW(my_fam->fam_put_blocking(local, item, 0, 13));
+    EXPECT_NO_THROW(my_fam->fam_put_blocking(local, item, 0, 13));
 
     // allocate local memory to receive 20 elements
     char *local3 = (char *)malloc(20);
@@ -226,16 +224,15 @@ TEST(FamContextModel, FamContextAllDataPathOpsIOTest) {
     EXPECT_NO_THROW(my_fam->fam_get_blocking(local3, item, 0, 13));
 
     EXPECT_STREQ(local, local3);
-    
-   //fam
-   //fam copy
-   
 
-Fam_Region_Descriptor *srcDesc, *destDesc;
+    // fam
+    // fam copy
+
+    Fam_Region_Descriptor *srcDesc, *destDesc;
     Fam_Descriptor *srcItem;
     Fam_Descriptor *destItem[MESSAGE_SIZE];
 
-    //char *local = strdup("Test message");
+    // char *local = strdup("Test message");
     const char *srcRegionName = get_uniq_str("Src_Region", my_fam);
     const char *srcItemName = get_uniq_str("Src_Itemt", my_fam);
 
@@ -251,8 +248,8 @@ Fam_Region_Descriptor *srcDesc, *destDesc;
                         my_fam->fam_allocate(srcItemName, 128, 0777, srcDesc));
     EXPECT_NE((void *)NULL, srcItem);
 
-    EXPECT_NO_THROW(destDesc = my_fam->fam_create_region(destRegionName, 8192,
-                                                         0777, NULL));
+    EXPECT_NO_THROW(
+        destDesc = my_fam->fam_create_region(destRegionName, 8192, 0777, NULL));
     EXPECT_NE((void *)NULL, destDesc);
 
     for (int i = 0; i < MESSAGE_SIZE; i++) {
@@ -308,21 +305,19 @@ Fam_Region_Descriptor *srcDesc, *destDesc;
     free((void *)srcItemName);
     free((void *)destRegionName);
     free((void *)destItemName);
-//fam copy end
-   EXPECT_NO_THROW(my_fam->fam_deallocate(item));
+    // fam copy end
+    EXPECT_NO_THROW(my_fam->fam_deallocate(item));
 
-   EXPECT_NO_THROW(my_fam->fam_destroy_region(desc));
+    EXPECT_NO_THROW(my_fam->fam_destroy_region(desc));
 
-  EXPECT_NO_THROW(my_fam->fam_context_close(ctx));
-   delete item;
+    EXPECT_NO_THROW(my_fam->fam_context_close(ctx));
+    delete item;
 
-   delete desc;
+    delete desc;
 
+    free((void *)testRegion);
 
-  free((void *)testRegion);
-
-  free((void *)firstItem);
-
+    free((void *)firstItem);
 }
 
 // Test case 7- FamContextAllIOAtomicsTest
@@ -331,23 +326,21 @@ TEST(FamContextModel, FamContextAllAtomicsIOTest) {
 
     fam_context *ctx = NULL;
 
-//    Fam_Descriptor *item = NULL;
+    //    Fam_Descriptor *item = NULL;
 
     EXPECT_NO_THROW(ctx = my_fam->fam_context_open());
-    
+
     Fam_Region_Descriptor *testRegionDesc;
-///    void *base;
+    ///    void *base;
 
     const char *testRegion = get_uniq_str("test", ctx);
 
-//    const char *firstItem = get_uniq_str("first", ctx);
+    //    const char *firstItem = get_uniq_str("first", ctx);
 
-
-
-    EXPECT_NO_THROW(testRegionDesc =  my_fam->fam_create_region(testRegion, 8192, 0777, NULL));
+    EXPECT_NO_THROW(testRegionDesc = my_fam->fam_create_region(testRegion, 8192,
+                                                               0777, NULL));
 
     EXPECT_NE((void *)NULL, testRegionDesc);
- 
 
     Fam_Descriptor *item;
     const char *dataItem = get_uniq_str("first", my_fam);
@@ -374,22 +367,25 @@ TEST(FamContextModel, FamContextAllAtomicsIOTest) {
 
         for (ofs = 0; ofs < 3; ofs++) {
             for (i = 0; i < 5; i++) {
-/*                cout << "Testing fam_add: item=" << item
-                     << ", offset=" << testOffset[ofs]
-                     << ", baseValue=" << baseValue[i]
-                     << ", incr=" << testAddValue[i]
-                     << ", expected=" << testExpectedValue[i] << endl;*/
+                /*                cout << "Testing fam_add: item=" << item
+                                     << ", offset=" << testOffset[ofs]
+                                     << ", baseValue=" << baseValue[i]
+                                     << ", incr=" << testAddValue[i]
+                                     << ", expected=" << testExpectedValue[i] <<
+                   endl;*/
                 int64_t result;
                 EXPECT_NO_THROW(
                     my_fam->fam_set(item, testOffset[ofs], baseValue[i]));
-	//	EXPECT_NO_THROW(
-          //          my_fam->fam_add(item, testOffset[ofs], testAddValue[i]));
+                //	EXPECT_NO_THROW(
+                //          my_fam->fam_add(item, testOffset[ofs],
+                //          testAddValue[i]));
 
-                //EXPECT_NO_THROW(my_fam->fam_quiet());
+                // EXPECT_NO_THROW(my_fam->fam_quiet());
                 EXPECT_NO_THROW(result = my_fam->fam_fetch_add(
                                     item, testOffset[ofs], testAddValue[i]));
-	//	EXPECT_NO_THROW(my_fam->fam_subtract(item, testOffset[ofs],
-          //                                           testAddValue[i]));
+                //	EXPECT_NO_THROW(my_fam->fam_subtract(item,
+                // testOffset[ofs],
+                //                                           testAddValue[i]));
 
                 EXPECT_EQ(baseValue[i], result);
                 EXPECT_NO_THROW(result = my_fam->fam_fetch_subtract(
@@ -398,14 +394,16 @@ TEST(FamContextModel, FamContextAllAtomicsIOTest) {
             }
         }
 
-//	testExpectedValue[5] = {0x1, 0x2468, 0xA8642, 0x7fffffff, INT_MIN};
-         for (ofs = 0; ofs < 3; ofs++) {
+        //	testExpectedValue[5] = {0x1, 0x2468, 0xA8642, 0x7fffffff,
+        // INT_MIN};
+        for (ofs = 0; ofs < 3; ofs++) {
             for (i = 0; i < 5; i++) {
-/*                cout << "Testing fam_add: item=" << item
-                     << ", offset=" << testOffset[ofs]
-                     << ", baseValue=" << baseValue[i]
-                     << ", incr=" << testAddValue[i]
-                     << ", expected=" << testExpectedValue[i] << endl;*/
+                /*                cout << "Testing fam_add: item=" << item
+                                     << ", offset=" << testOffset[ofs]
+                                     << ", baseValue=" << baseValue[i]
+                                     << ", incr=" << testAddValue[i]
+                                     << ", expected=" << testExpectedValue[i] <<
+                   endl;*/
                 int64_t result;
                 EXPECT_NO_THROW(
                     my_fam->fam_set(item, testOffset[ofs], baseValue[i]));
@@ -424,20 +422,18 @@ TEST(FamContextModel, FamContextAllAtomicsIOTest) {
                 EXPECT_EQ(baseValue[i], result);
             }
         }
-      
-
-
 
         EXPECT_NO_THROW(my_fam->fam_deallocate(item));
         delete item;
     }
-      // fam_min and fam_max
+    // fam_min and fam_max
     const char *secondItem = get_uniq_str("second", my_fam);
-       // Allocating data items in the created region
-    EXPECT_NO_THROW(item = my_fam->fam_allocate(secondItem, 1024, 0777, testRegionDesc));
+    // Allocating data items in the created region
+    EXPECT_NO_THROW(
+        item = my_fam->fam_allocate(secondItem, 1024, 0777, testRegionDesc));
     EXPECT_NE((void *)NULL, item);
 
-        // Atomic min and max operations for uint32
+    // Atomic min and max operations for uint32
     uint32_t valueUint32 = 0xBBBBBBBB;
     EXPECT_NO_THROW(my_fam->fam_set(item, 0, valueUint32));
     EXPECT_NO_THROW(my_fam->fam_quiet());
@@ -452,9 +448,9 @@ TEST(FamContextModel, FamContextAllAtomicsIOTest) {
     EXPECT_NO_THROW(valueUint32 = my_fam->fam_fetch_uint32(item, 0));
     EXPECT_EQ(valueUint32, (uint32_t)0xCCCCCCCC);
 
-  //fam_fetch_min and fam_fetch_max
-   
-	// Atomic min and max operations for int64
+    // fam_fetch_min and fam_fetch_max
+
+    // Atomic min and max operations for int64
     int64_t valueInt64 = 0xBBBBBBBBBBBBBBBB;
     EXPECT_NO_THROW(my_fam->fam_set(item, 0, valueInt64));
     EXPECT_NO_THROW(my_fam->fam_quiet());
@@ -469,14 +465,12 @@ TEST(FamContextModel, FamContextAllAtomicsIOTest) {
     EXPECT_NO_THROW(valueInt64 = my_fam->fam_fetch_uint64(item, 0));
     EXPECT_EQ(valueInt64, (int64_t)0xCCCCCCCCCCCCCCCC);
 
-
-   //fam_add and fam_or
+    // fam_add and fam_or
 
     const char *thirdItem = get_uniq_str("third", my_fam);
- 
 
-    //mode_t test_perm_mode[3] = {0777, 0644, 0600};
-//    size_t test_item_size[3] = {1024, 4096, 8192};
+    // mode_t test_perm_mode[3] = {0777, 0644, 0600};
+    //    size_t test_item_size[3] = {1024, 4096, 8192};
 
     uint64_t operand1Value[5] = {0x0, 0x1234, 0xffff222233334321,
                                  0x7ffffffffffffffe, 0x7fffffffffffffff};
@@ -500,13 +494,14 @@ TEST(FamContextModel, FamContextAllAtomicsIOTest) {
 
         for (ofs = 0; ofs < 3; ofs++) {
             for (i = 0; i < 5; i++) {
-        /*        cout << "Testing logical atomics: item=" << item
-                     << ", offset=" << testOffset[ofs]
-                     << ", operand1=" << operand1Value[i]
-                     << ", operand2=" << operand2Value[i]
-                     << ", expected(and)=" << testAndExpectedValue[i]
-                     << ", expected(or)=" << testOrExpectedValue[i]
-                     << ", expected(xor)=" << testXorExpectedValue[i] << endl;i */
+                /*        cout << "Testing logical atomics: item=" << item
+                             << ", offset=" << testOffset[ofs]
+                             << ", operand1=" << operand1Value[i]
+                             << ", operand2=" << operand2Value[i]
+                             << ", expected(and)=" << testAndExpectedValue[i]
+                             << ", expected(or)=" << testOrExpectedValue[i]
+                             << ", expected(xor)=" << testXorExpectedValue[i] <<
+                   endl;i */
                 uint64_t result;
                 EXPECT_NO_THROW(
                     my_fam->fam_set(item, testOffset[ofs], operand1Value[i]));
@@ -546,15 +541,19 @@ TEST(FamContextModel, FamContextAllAtomicsIOTest) {
             }
         }
 
-              for (ofs = 0; ofs < 3; ofs++) {
+        for (ofs = 0; ofs < 3; ofs++) {
             for (i = 0; i < 5; i++) {
-/*                cout << "Testing logical atomics: item=" << item
-                     << ", offset=" << testOffset[ofs]
-                     << ", operand1=" << operand1Value[i]
-                     << ", operand2=" << operand2Value[i]
-                     << ", expected(and)=" << testAndExpectedValue[i]
-                     << ", expected(or)=" << testOrExpectedValue[i]
-                     << ", expected(xor)=" << testXorExpectedValue[i] << endl; */
+                /*                cout << "Testing logical atomics: item=" <<
+                   item
+                                     << ", offset=" << testOffset[ofs]
+                                     << ", operand1=" << operand1Value[i]
+                                     << ", operand2=" << operand2Value[i]
+                                     << ", expected(and)=" <<
+                   testAndExpectedValue[i]
+                                     << ", expected(or)=" <<
+                   testOrExpectedValue[i]
+                                     << ", expected(xor)=" <<
+                   testXorExpectedValue[i] << endl; */
                 uint64_t result;
                 EXPECT_NO_THROW(
                     my_fam->fam_set(item, testOffset[ofs], operand1Value[i]));
@@ -593,14 +592,14 @@ TEST(FamContextModel, FamContextAllAtomicsIOTest) {
                 EXPECT_EQ(testXorExpectedValue[i], result);
             }
         }
-    
+
         EXPECT_NO_THROW(my_fam->fam_deallocate(item));
         delete item;
     }
 
-    //fam_swap
+    // fam_swap
 
-     uint64_t oldValue[5] = {0x0, 0x1234, 0x1111222233334444, 0x7ffffffffffffffe,
+    uint64_t oldValue[5] = {0x0, 0x1234, 0x1111222233334444, 0x7ffffffffffffffe,
                             0x7fffffffffffffff};
     uint64_t newValue[5] = {0x1, 0x4321, 0x2111222233334321, 0x8000000000000000,
                             0xefffffffffffffff};
@@ -617,10 +616,12 @@ TEST(FamContextModel, FamContextAllAtomicsIOTest) {
 
         for (ofs = 0; ofs < 3; ofs++) {
             for (i = 0; i < 5; i++) {
-  /*              cout << "Testing fam_compare_and_swap: item=" << item
-                     << ", offset=" << hex << testOffset[ofs]
-                     << ", oldValue=" << hex << oldValue[i]
-                     << ", newValue=" << hex << newValue[i] << endl;*/
+                /*              cout << "Testing fam_compare_and_swap: item=" <<
+                   item
+                                   << ", offset=" << hex << testOffset[ofs]
+                                   << ", oldValue=" << hex << oldValue[i]
+                                   << ", newValue=" << hex << newValue[i] <<
+                   endl;*/
 
                 uint64_t result;
                 EXPECT_NO_THROW(
@@ -634,19 +635,16 @@ TEST(FamContextModel, FamContextAllAtomicsIOTest) {
                 EXPECT_EQ(newValue[i], result);
             }
         }
-   
+
         EXPECT_NO_THROW(my_fam->fam_deallocate(item));
         delete item;
     }
-    
+
     free((void *)thirdItem);
-   EXPECT_NO_THROW(my_fam->fam_destroy_region(testRegionDesc));
+    EXPECT_NO_THROW(my_fam->fam_destroy_region(testRegionDesc));
 
     free((void *)dataItem);
-     EXPECT_NO_THROW(my_fam->fam_context_close(ctx));
-
-
-
+    EXPECT_NO_THROW(my_fam->fam_context_close(ctx));
 }
 int main(int argc, char **argv) {
     int ret = 0;
